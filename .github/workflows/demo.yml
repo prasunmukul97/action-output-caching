@@ -51,6 +51,6 @@ jobs:
       - name: List downloaded files
         run: ls
       - name: Read script filename from build job output
-        run: echo "Script filename from build job: ${{ needs.build.outputs.script-file }}"
+        run: echo "Script filename from build job ${{ needs.build.outputs.script-file }}"
       - name: Deploy
         run: echo "Deploying..."

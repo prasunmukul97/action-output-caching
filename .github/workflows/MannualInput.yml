@@ -16,6 +16,10 @@ on:
         description: Include 🎉🤣 emojis
       environment:
         type: environment
+        description: Environment to deploy to
+        options:
+          - production
+          - staging
 
 jobs:
   greet:
