@@ -18,6 +18,8 @@ jobs:
   build:
     needs: test
     runs-on: ubuntu-latest
+    Outputs: # Define outputs for the build job
+      script-file: ${{ steps.publish.outputs.stepBuild-file }}      
     steps:
       - name: Get code
         uses: actions/checkout@v3
@@ -25,6 +27,10 @@ jobs:
         run: npm ci
       - name: Build website
         run: npm run build
+      - name: Publish js filename
+        id: publish
+      # Publish the filename of the built JavaScript file as step output variable
+        run: find dist/assets/*.js -type f -execdir echo 'stepBuild-file={}' >> $GITHUB_OUTPUT ';' 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v7
         with:
@@ -35,8 +41,8 @@ jobs:
           #   package.json
           retention-days: 1
   deploy:
-    needs: build
-    runs-on: ubuntu-latest
+    needs: [build] # Specify that the deploy job depends on the build job
+    runs-on: ubuntu-latest # Specify the runner for the deploy job
     steps:
       - name: Download build artifacts
         uses: actions/download-artifact@v8
@@ -44,5 +50,7 @@ jobs:
           name: dist-files # Name of the artifact to download
       - name: List downloaded files
         run: ls
+      - name: Read script filename from build job output
+        run: echo "Script filename from build job: ${{ needs.build.outputs.script-file }}"
       - name: Deploy
         run: echo "Deploying..."
